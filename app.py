@@ -11,7 +11,7 @@ from PIL import Image
 
 # Download MobileNetV3-Large model weights from Google Drive
 MODEL_PATH = "best.pt"
-MODEL_ID = "1-bSdWUkeEASlu1KFveeFo-R3gaWrwPoY"  # <-- just the file ID
+MODEL_ID = "1-bSdWUkeEASlu1KFveeFo-R3gaWrwPoY"  # file ID
 
 if not os.path.exists(MODEL_PATH):
     st.info("Downloading MobileNetV3-Large weights from Google Drive...")
@@ -27,13 +27,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class_labels = ['Acute Otitis Media', 'Cerumen Impaction', 'Chronic Otitis Media', 'Myringosclerosis', 'Normal']
 
 # Build MobileNetV3-Large and match classifier to your label count
-mobilenet_model = models.mobilenet_v3_large(weights=None)  # no ImageNet download
+mobilenet_model = models.mobilenet_v3_large(weights=None)  
 mobilenet_model.classifier[-1] = nn.Linear(
     mobilenet_model.classifier[-1].in_features,
     len(class_labels)
 )
 
-# Load checkpoint (plain state_dict or wrapped; also handle DDP 'module.' prefix)
+# Loading checkpoint 
 state = torch.load(MODEL_PATH, map_location=device)
 if isinstance(state, dict):
     for k in ("state_dict", "model_state_dict", "net", "model"):
@@ -49,13 +49,13 @@ except RuntimeError:
 
 mobilenet_model.eval().to(device)
 
-# Grad-CAM target layer for MobileNetV3-Large (last conv block)
+# Grad-CAM target layer for MobileNetV3-Large (last convolutional block)
 try:
     cam_extractor = GradCAM(mobilenet_model, target_layer="features.16")
 except Exception:
     cam_extractor = GradCAM(mobilenet_model, target_layer="features.15")
 
-# Image transform (include ImageNet normalization like your training)
+# Image transform, image normalisation
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
