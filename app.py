@@ -26,7 +26,7 @@ if not os.path.exists(MODEL_PATH):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class_labels = ['Acute Otitis Media', 'Cerumen Impaction', 'Chronic Otitis Media', 'Myringosclerosis', 'Normal']
 
-# Build MobileNetV3-Large and match classifier to your label count
+# Build MobileNetV3-Large and match classifier to label count
 mobilenet_model = models.mobilenet_v3_large(weights=None)  
 mobilenet_model.classifier[-1] = nn.Linear(
     mobilenet_model.classifier[-1].in_features,
@@ -89,3 +89,4 @@ if uploaded_file:
     heatmap_resized = heatmap_pil.resize(image.size)
     cam_image = overlay_mask(image, heatmap_resized, alpha=0.5)
     st.image(cam_image, caption="Grad-CAM Heatmap", use_container_width=True)
+
